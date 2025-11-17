@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/gallery`;
+const API_URL = "/api/gallery";
 
 const Gallery = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);

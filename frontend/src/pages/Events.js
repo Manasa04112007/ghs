@@ -60,9 +60,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/events`
-        );
+        const res = await axios.get("/api/events");
         setDbEvents(res.data);
       } catch (err) {
         console.error("Error fetching events:", err);
