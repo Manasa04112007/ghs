@@ -56,27 +56,31 @@ const staticEvents = [
 
 const Events = () => {
   const [dbEvents, setDbEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
+        setLoading(true);
         const res = await axios.get("/api/events");
         setDbEvents(res.data);
       } catch (err) {
-        console.error("Error fetching events:", err);
+        console.error("❌ Error fetching events:", err);
+        setDbEvents([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchEvents();
   }, []);
 
-  // Combine static and backend events
   const allEvents = [
     ...staticEvents,
     ...dbEvents.map((event) => ({
       title: event.title,
       description: event.description,
       image: event.image,
-      icon: null, // no icon for admin-added events
+      icon: null,
     })),
   ];
 
@@ -92,7 +96,11 @@ const Events = () => {
           Events and Celebrations
         </motion.h2>
 
-        {allEvents.length === 0 ? (
+        {loading && (
+          <p className="text-center text-gray-600">Loading events...</p>
+        )}
+
+        {!loading && allEvents.length === 0 ? (
           <p className="text-center text-gray-600">No events available yet.</p>
         ) : (
           <div className="grid md:grid-cols-3 gap-8">

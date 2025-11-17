@@ -12,26 +12,35 @@ router.post("/login", async (req, res) => {
 
     // 🔹 1. Validate input
     if (!email || !password) {
-      return res.status(400).json({ msg: "Please provide email and password" });
+      return res.status(400).json({
+        success: false,
+        msg: "Please provide email and password",
+      });
     }
 
     // 🔹 2. Check if admin exists
     const admin = await Admin.findOne({ email });
     if (!admin) {
-      return res.status(404).json({ msg: "Admin not found" });
+      return res.status(404).json({
+        success: false,
+        msg: "Admin not found",
+      });
     }
 
     // 🔹 3. Compare password
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.status(401).json({ msg: "Invalid email or password" });
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid email or password",
+      });
     }
 
     // 🔹 4. Generate JWT token
     const token = jwt.sign(
       { id: admin._id, email: admin.email },
       process.env.JWT_SECRET || "defaultSecretKey",
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 
     // 🔹 5. Send success response
@@ -45,8 +54,12 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ msg: "Server error", error: error.message });
+    console.error("❌ Login error:", error);
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
+      error: error.message,
+    });
   }
 });
 

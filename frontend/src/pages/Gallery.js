@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 
-const API_URL = "/api/gallery";
-
 const Gallery = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [galleryItems, setGalleryItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const openModal = (item) => setSelectedMedia(item);
   const closeModal = () => setSelectedMedia(null);
@@ -14,11 +13,11 @@ const Gallery = () => {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const res = await axios.get(API_URL);
+        setLoading(true);
+        const res = await axios.get("/api/gallery");
 
-        // Backend images only
         const items = res.data.map((media) => ({
-          type: media.type || "image", // assumes backend sends type (image/video)
+          type: media.type || "image",
           src: media.image || media.video,
           title: media.caption || "Untitled",
         }));
@@ -26,6 +25,9 @@ const Gallery = () => {
         setGalleryItems(items);
       } catch (error) {
         console.error("❌ Error fetching gallery:", error);
+        setGalleryItems([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -40,7 +42,13 @@ const Gallery = () => {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {galleryItems.length === 0 && (
+          {loading && (
+            <p className="text-center text-gray-700 col-span-3">
+              Loading gallery...
+            </p>
+          )}
+
+          {!loading && galleryItems.length === 0 && (
             <p className="text-center text-gray-700 col-span-3">
               No media available.
             </p>
