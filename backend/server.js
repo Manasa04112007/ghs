@@ -34,8 +34,8 @@ app.use("/api/events", eventRoutes);
 // ✅ Serve React frontend static files
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-// ✅ Fallback to index.html for React Router
-app.get("*", (req, res) => {
+// ✅ Fallback to index.html for React Router (FIX: Use regex instead of wildcard string)
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
 });
 
